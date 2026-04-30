@@ -47,7 +47,7 @@ class AFCled:
         self.update_color_data(self.led_helper.get_status()['color_data'])
         self.old_color_data = bytearray([d ^ 1 for d in self.color_data])
         # Register callbacks
-        printer.register_event_handler("klippy:connect", self.send_data)
+        printer.register_event_handler("klippy:connect", self.handle_connect)
         self.last_led_color = {}
         self.keep_leds_off = False
 
@@ -72,12 +72,22 @@ class AFCled:
             "neopixel_send oid=%c", "neopixel_result oid=%c success=%c",
             oid=self.oid, cq=cmd_queue)
 
+    def handle_connect(self):
+        if self.mcu.non_critical_disconnected:
+            logging.info(
+                "AFC_led %s failed to init - non_critical_mcu: %s is disconnected!",
+                self.name, self.mcu.get_name())
+            return
+        self.send_data()
+
     def update_color_data(self, led_state):
         color_data = self.color_data
         for cdidx, (lidx, cidx) in self.color_map:
             color_data[cdidx] = int(led_state[lidx][cidx] * 255. + .5)
 
     def send_data(self, print_time=None):
+        if self.neopixel_update_cmd is None or self.mcu.non_critical_disconnected:
+            return
         old_data, new_data = self.old_color_data, self.color_data
         if new_data == old_data:
             return
