@@ -244,6 +244,19 @@ class AFCExtruderStepper(AFCLane):
             self.logger.debug(f"Running macro: {command}")
             self.gcode.run_script_from_command(command)
 
+            if self.afc.after_current_change_cmd is not None:
+                hook = "{macro} STEPPER='{stepper}' CURRENT={current}".format(
+                    macro=self.afc.after_current_change_cmd,
+                    stepper=self.name,
+                    current=current,
+                )
+                self.logger.debug(f"Running macro: {hook}")
+                try:
+                    self.gcode.run_script_from_command(hook)
+                except Exception:
+                    msg = f"AFC after_current_change_cmd failed for {self.name}\n{traceback.format_exc()}"
+                    self.logger.warning(msg)
+
     def set_load_current(self):
         """
         Helper function to update TMC current to use run current value

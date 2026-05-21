@@ -176,6 +176,7 @@ class afc:
 
         self.form_tip               = config.getboolean("form_tip", False)          # Set to True to tip forming when unloading lanes
         self.form_tip_cmd           = config.get('form_tip_cmd', None)              # Macro to use when tip forming. Change macro name if you would like to use your own tip forming macro
+        self.after_current_change_cmd = config.get('after_current_change_cmd', None) # Optional macro to run after AFC changes lane current. Receives STEPPER, CURRENT
 
         # MOVE SETTINGS
         self.quiet_mode             = False                                         # Flag indicating if quiet move is enabled or not
