@@ -247,7 +247,7 @@ class AFCExtruderStepper(AFCLane):
             if self.afc.after_current_change_cmd is not None:
                 hook = "{macro} STEPPER='{stepper}' CURRENT={current}".format(
                     macro=self.afc.after_current_change_cmd,
-                    stepper=self.name,
+                    stepper=f"AFC_stepper {self.name}",
                     current=current,
                 )
                 self.logger.debug(f"Running macro: {hook}")
