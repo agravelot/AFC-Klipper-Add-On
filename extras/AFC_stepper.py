@@ -253,9 +253,15 @@ class AFCExtruderStepper(AFCLane):
                 self.logger.debug(f"Running macro: {hook}")
                 try:
                     self.gcode.run_script_from_command(hook)
-                except Exception:
-                    msg = f"AFC after_current_change_cmd failed for {self.name}\n{traceback.format_exc()}"
-                    self.logger.warning(msg)
+                except Exception as exc:
+                    self.logger.warning(
+                        f"AFC after_current_change_cmd failed for {self.name}: {exc}"
+                    )
+                    self.logger.debug(
+                        "AFC after_current_change_cmd traceback for %s:\n%s",
+                        self.name,
+                        traceback.format_exc(),
+                    )
 
     def set_load_current(self):
         """
